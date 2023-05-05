@@ -5,3 +5,16 @@ body{
 img{
   height: 200px;
 }
+li{
+  list-style: none;
+}
+li.message{
+  border: 1px solid blue;
+  margin: 2%;
+  padding: 3%;
+  background-color: rgb(170, 170, 170,50%);
+  /* width: 55%; */
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}

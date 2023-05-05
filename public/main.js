@@ -96,3 +96,24 @@ Array.from(trash).forEach(function(element) {
         })
       });
 });
+const dltComment = document.querySelectorAll('.deleteComment')
+Array.from(dltComment).forEach(function(button) {
+  button.addEventListener('click', function(){
+    const name = this.parentNode.parentNode.childNodes[1].innerText
+    const msg = this.parentNode.parentNode
+    console.log(msg)
+    fetch('/messages/comment', {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'name': name,
+        'msg': msg
+      })
+    }).then(function (response) {
+      window.location.reload()
+    })
+  });
+});
+// vintcerf

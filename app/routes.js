@@ -32,7 +32,7 @@ module.exports = function(app, passport, db) {
 // message board routes ===============================================================
 
     app.post('/messages', (req, res) => {
-      db.collection('messages').insertOne({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0, comment:""}, (err, result) => {
+      db.collection('messages').insertOne({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0, comment:[]}, (err, result) => {
         if (err) return console.log(err)
         console.log('saved to database')
         res.redirect('/profile')
@@ -74,8 +74,18 @@ module.exports = function(app, passport, db) {
       db.collection('messages')
       .findOneAndUpdate(
         { name: req.body.name, msg: req.body.msg },
-        { $set: { comment: req.body.comment } },
-        { upsert: true, returnOriginal: false },
+        { $push: { comment: req.body.comment } },
+        (err, result) => {
+          if (err) return res.send(err)
+          res.send(result)
+        }
+      )
+    })
+    app.delete('/messages/comment', (req, res) => {
+      db.collection('messages')
+      .findOneAndDelete(
+        // { name: req.body.name, msg: req.body.msg },
+        { $pull: { comment: req.body.comment } },
         (err, result) => {
           if (err) return res.send(err)
           res.send(result)
@@ -83,6 +93,7 @@ module.exports = function(app, passport, db) {
       )
     })
     
+    // $pull - array remove update
     app.delete('/messages', (req, res) => {
       db.collection('messages').findOneAndDelete({
         name: req.body.name, 
@@ -92,21 +103,12 @@ module.exports = function(app, passport, db) {
         res.send('Message deleted!')
       })
     })
+    
 
     // =========================================
     // feed====================================
     // ========================================
-    app.get("/feed", function (req, res) {
-      db.collection("posts")
-        .find()
-        .sort({ _id: -1 })
-        .toArray((err, result) => {
-          if (err) return console.log(err);
-          res.render("feed.ejs", {
-            posts: result,
-          });
-        });
-    });
+   
 
 // =============================================================================
 // AUTHENTICATE (FIRST LOGIN) ==================================================
